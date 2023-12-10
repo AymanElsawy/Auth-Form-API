@@ -85,8 +85,10 @@ export async function register(req, res) {
   User.create(newUser) // create user
     .then((user) => {
       // if user created
-      const token = jwt.sign( // generate token
-        { // payload
+      const token = jwt.sign(
+        // generate token
+        {
+          // payload
           id: user._id,
           name: user.name,
           email: user.email,
@@ -111,3 +113,32 @@ export async function register(req, res) {
     });
 }
 
+export async function login(req, res) {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .json({ message: "User not found" });
+  }
+  const match = await bcrypt.compare(req.body.password, user.password);
+  if (!match) {
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ message: "Invalid password" });
+  }
+  const token = jwt.sign(
+    {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      address: user.address,
+      photo: user.photo,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "1d",
+    }
+  );
+  return res.status(StatusCodes.OK).json({ message: "Logged In", token });
+}
