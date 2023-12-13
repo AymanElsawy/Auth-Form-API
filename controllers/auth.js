@@ -5,14 +5,6 @@ import bcrypt from "bcryptjs";
 import joi from "joi";
 
 export async function register(req, res) {
-  if (!req.file) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "Photo is required" });
-  }
-  const image = `${req.protocol}://${req.get("host")}/public/images/${
-    req.file.filename
-  }`;
   const newEmail = req.body.email;
   const findEmail = await User.findOne({ email: newEmail }); // check if email already exists
   if (findEmail) {
@@ -68,6 +60,15 @@ export async function register(req, res) {
       .status(StatusCodes.BAD_REQUEST)
       .json({ error: "Invalid input", message: error.details[0].message });
   }
+
+   if (!req.file) {
+     return res
+       .status(StatusCodes.BAD_REQUEST)
+       .json({ message: "Photo is required" });
+   }
+   const image = `${req.protocol}://${req.get("host")}/public/images/${
+     req.file.filename
+   }`;
 
   const salt = bcrypt.genSaltSync(10); // generate salt
   const hash = bcrypt.hashSync(req.body.password, salt); // hash password
