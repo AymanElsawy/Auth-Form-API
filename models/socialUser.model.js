@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 // user schema
-const fbUserSchema = mongoose.Schema(
+const socialUserSchema = mongoose.Schema(
   {
     name: String,
     email: String,
@@ -13,6 +13,6 @@ const fbUserSchema = mongoose.Schema(
   }
 );
 
-const User = mongoose.model("FbUser", fbUserSchema);
+const User = mongoose.model("SocialUser", socialUserSchema);
 
 export default User;
